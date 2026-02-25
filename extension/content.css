@@ -1,0 +1,22 @@
+/* Content Script 样式 */
+
+/* 风险标记动画 */
+.seller-help-risk-badge {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 注入的按钮样式 */
+.seller-help-injected-btn {
+  z-index: 99999 !important;
+}

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卖家帮</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0055FF 0%, #258cf4 100%);
+      padding: 20px;
+      color: white;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      color: #0055FF;
+      border-bottom-color: #0055FF;
+    }
+    
+    .tab:hover:not(.active) {
+      background: #f1f5f9;
+    }
+    
+    /* Content */
+    .content {
+      padding: 20px;
+    }
+    
+    .panel {
+      display: none;
+    }
+    
+    .panel.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Search Section */
+    .search-box {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 16px;
+    }
+    
+    .search-box textarea {
+      width: 100%;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      resize: none;
+      height: 80px;
+      transition: all 0.2s;
+    }
+    
+    .search-box textarea:focus {
+      outline: none;
+      border-color: #0055FF;
+      box-shadow: 0 0 0 3px rgba(0,85,255,0.1);
+    }
+    
+    .search-box textarea::placeholder {
+      color: #94a3b8;
+    }
+    
+    .search-btn {
+      width: 100%;
+      background: #0055FF;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .search-btn:hover {
+      background: #0046CC;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,85,255,0.3);
+    }
+    
+    .search-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Parsed Tags */
+    .parsed-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .tag.name { background: #dbeafe; color: #1d4ed8; }
+    .tag.phone { background: #dcfce7; color: #16a34a; }
+    .tag.address { background: #f3e8ff; color: #9333ea; }
+    .tag.platform { background: #cffafe; color: #0891b2; }
+    
+    /* Result */
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-top: 16px;
+    }
+    
+    .risk-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    .risk-level.high {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .risk-level.medium {
+      background: #fffbeb;
+      color: #d97706;
+    }
+    
+    .risk-level.low {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+    
+    .risk-score {
+      font-size: 48px;
+      font-weight: 800;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .risk-score.high { color: #dc2626; }
+    .risk-score.medium { color: #d97706; }
+    .risk-score.low { color: #16a34a; }
+    
+    /* Report Form */
+    .form-section {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .form-label .required {
+      color: #dc2626;
+    }
+    
+    .form-label .badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    .badge.required {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .badge.optional {
+      background: #f0f9ff;
+      color: #0891b2;
+    }
+    
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    
+    .platform-btn {
+      padding: 12px 8px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      background: white;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .platform-btn:hover {
+      border-color: #cbd5e1;
+    }
+    
+    .platform-btn.selected {
+      border-color: #0055FF;
+      background: #eff6ff;
+      color: #0055FF;
+    }
+    
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .risk-btn {
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      background: white;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    
+    .risk-btn:hover {
+      border-color: #cbd5e1;
+    }
+    
+    .risk-btn.selected {
+      border-color: #0055FF;
+      background: #eff6ff;
+    }
+    
+    .risk-btn span {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    
+    /* Upload Area */
+    .upload-section {
+      margin-top: 20px;
+    }
+    
+    .upload-card {
+      border: 2px dashed #e2e8f0;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+    
+    .upload-card:hover {
+      border-color: #0055FF;
+      background: #f8fafc;
+    }
+    
+    .upload-card .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .upload-card p {
+      font-size: 13px;
+      color: #64748b;
+    }
+    
+    .upload-card small {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #0055FF 0%, #258cf4 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.2s;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,85,255,0.3);
+    }
+    
+    .submit-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Status */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 16px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+    
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #0055FF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  
+.upload-list { margin-top: 8px; }
+.upload-item { display: flex; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 4px; font-size: 12px; }
+.upload-item.uploading { color: #64748b; }
+.upload-item .success { color: #22c55e; }
+.upload-item .error { color: #dc2626; }
+.confidence-badge { display: inline-block; padding: 4px 8px; background: #dcfce7; color: #16a34a; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }</style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>🛡️ 卖家帮</h1>
+    <p>免费公益反欺诈平台</p>
+  </div>
+  
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="search">🔍 风险查询</div>
+    <div class="tab" data-tab="report">🚨 我要举报</div>
+    <div class="tab" data-tab="about">📖 评分规则</div>
+  </div>
+  
+  <!-- Content -->
+  <div class="content">
+    <!-- Search Panel -->
+    <div class="panel active" id="search-panel">
+      <div class="search-box">
+        <textarea id="search-input" placeholder="请直接粘贴淘宝/拼多多/抖音的订单收件信息..."></textarea>
+        <button class="search-btn" id="parse-btn">
+          <span>🔮</span> 智能解析
+        </button>
+        
+        <!-- Parsed Tags -->
+        <div class="parsed-tags" id="parsed-tags" style="display: none;">
+          <span class="tag name" id="tag-name"></span>
+          <span class="tag phone" id="tag-phone"></span>
+          <span class="tag address" id="tag-address"></span>
+          <span class="tag ext" id="tag-ext" style="display:none; background: #fef3c7; color: #b45309; border-color: #fcd34d;"></span>
+          <span class="tag logistics" id="tag-logistics" style="display:none; background: #fce7f3; color: #be185d; border-color: #f9a8d4;"></span>
+          <span class="tag platform" id="tag-platform"></span>
+        </div>
+        
+        <!-- Search Button (after parse) -->
+        <button class="search-btn" id="search-btn" style="display: none; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+          <span>⚡</span> 一键查询风险
+        </button>
+      </div>
+      
+      <!-- Result Card -->
+      <div class="result-card" id="result-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <p style="font-size: 12px; color: #64748b;">风险评估结果</p>
+            <h3 style="font-size: 16px; font-weight: 700;">ID: user_882931</h3>
+          </div>
+          <div class="risk-level high" id="risk-level">
+            <span>●</span> 高风险
+          </div>
+        </div>
+        
+        <div class="risk-score high" id="risk-score">88</div>
+        
+        <p style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px;" id="risk-desc">
+          该买家存在多个高关联度异常举报案例，具有极高拒付及恶意退款风险。
+        </p>
+        
+        <div style="background: #fffbeb; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+          <p style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px;">💡 防御建议</p>
+          <p style="font-size: 12px; color: #92400e;">建议在拼多多后台申请"异常订单拦截"，发货时加盖防伪签并全程监控打包。</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Report Panel -->
+    <div class="panel" id="report-panel">
+      <!-- Platform -->
+      <div class="form-section">
+        <div class="form-label">
+          所属平台 <span class="badge required">必填</span>
+        </div>
+        <div class="platform-grid" id="platform-grid">
+          <button class="platform-btn" data-platform="taobao">淘宝/天猫</button>
+          <button class="platform-btn" data-platform="pinduoduo">拼多多</button>
+          <button class="platform-btn" data-platform="douyin">抖音</button>
+          <button class="platform-btn" data-platform="jd">京东</button>
+          <button class="platform-btn" data-platform="other">其他</button>
+        </div>
+      </div>
+      
+      <!-- Risk Type -->
+      <div class="form-section">
+        <div class="form-label">
+          风险类型 <span class="badge required">必填</span>
+        </div>
+        <div class="risk-grid" id="risk-grid">
+          <button class="risk-btn" data-risk="only_refund">
+            💰 恶意仅退款
+            <span>高频诈骗类型</span>
+          </button>
+          <button class="risk-btn" data-risk="return_scam">
+            📦 退货调包
+            <span>掉包商品欺诈</span>
+          </button>
+          <button class="risk-btn" data-risk="blackmail">
+            ⚠️ 极限词敲诈
+            <span>职业打假人</span>
+          </button>
+          <button class="risk-btn" data-risk="fake_review">
+            ⭐ 职业差评师
+            <span>恶意差评威胁</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Upload Sections -->
+      <div class="upload-section">
+        <!-- 订单详情 -->
+        <div class="form-label">
+          1. 订单详情截图 <span class="badge required">必填</span>
+        </div>
+        <div class="upload-card" data-type="order">
+          <div class="icon">📋</div>
+          <p>点击上传或拖拽文件到此处</p>
+          <small>自动提取风险指纹</small>
+        </div>
+        
+        <!-- 退款详情 -->
+        <div class="form-label">
+          2. 售后/退款详情 <span class="badge required">必填</span>
+        </div>
+        <div class="upload-card" data-type="refund">
+          <div class="icon">📝</div>
+          <p>上传退款申请页面截图</p>
+          <small>用于判定风险类型</small>
+        </div>
+        
+        <!-- 聊天记录 -->
+        <div class="form-label">
+          3. 聊天记录 <span class="badge optional">选填</span>
+        </div>
+        <div class="upload-card" data-type="chat">
+          <div class="icon">💬</div>
+          <p>上传旺旺/拼多多聊天截图</p>
+          <small>AI将分析买家恶意意图</small>
+        </div>
+        
+        <!-- 物理凭证 -->
+        <div class="form-label">
+          4. 物理凭证 <span class="badge optional">选填</span>
+        </div>
+        <div class="upload-card" data-type="evidence">
+          <div class="icon">📦</div>
+          <p>物流底单/拆包照片</p>
+          <small>纯存储供人工审核</small>
+        </div>
+      </div>
+      
+      <!-- Auto Fill from Page -->
+      <div style="background: #f0f9ff; border-radius: 12px; padding: 16px; margin-top: 20px; cursor: pointer;" id="auto-fetch">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 24px;">🤖</span>
+          <div>
+            <p style="font-size: 14px; font-weight: 600; color: #0891b2;">🤖 一键自动获取订单信息</p>
+            <p style="font-size: 12px; color: #64748b;">从当前页面自动抓取订单信息</p>
+          </div>
+        </div>
+      </div>
+      
+      <button class="submit-btn" id="submit-btn" disabled>
+        🚀 提交举报
+      </button>
+      
+      <!-- 打赏区域 -->
+      <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px;">
+        <p style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 12px;">💝 支持公益平台</p>
+        <div style="display: flex; gap: 8px;">
+          <button style="flex:1; padding: 10px; background: white; border: 1px solid #d4d4d4; border-radius: 8px; font-size: 12px; cursor: pointer;" onclick="alert('感谢您的支持支付任意！扫码金额')">
+            🧧 支付宝
+          </button>
+          <button style="flex:1; padding: 10px; background: white; border: 1px solid #d4d4d4; border-radius: 8px; font-size: 12px; cursor: pointer;" onclick="alert('感谢您的支持！扫码支付任意金额')">
+            💚 微信
+          </button>
+        </div>
+        <p style="font-size: 11px; color: #a16207; margin-top: 8px; text-align: center;">
+          打赏金额将用于系统维护和奖励举报商户
+        </p>
+      </div>
+      
+      <div class="status-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="status-dot"></div>
+          <span>已连接服务器</span>
+        </div>
+        <span>今日已帮助 842 次查询</span>
+      </div>
+    </div>
+    
+    <!-- About Panel - 评分规则说明 -->
+    <div class="panel" id="about-panel">
+      <div style="background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">📊 风险评分机制</h3>
+        
+        <div style="margin-bottom: 20px;">
+          <p style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px;">风险评分公式</p>
+          <div style="background: #f1f5f9; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: #1e293b;">
+            RS = Σ(Wb × We × F(t))
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px;">行为恶劣度 (Wb)</p>
+          <div style="font-size: 12px; color: #64748b;">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>退货退款</span><span style="color: #22c55e;">+0.5</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>频繁仅退款</span><span style="color: #f59e0b;">+2.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>退货调包</span><span style="color: #ef4444;">+5.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+              <span>伪造凭证敲诈</span><span style="color: #ef4444;">+4.0</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px;">证据置信度 (We)</p>
+          <div style="font-size: 12px; color: #64748b;">
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>仅文字描述</span><span>+0.5</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>有截图</span><span>+1.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+              <span>有视频</span><span>+2.0</span>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <p style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px;">时间衰减 F(t)</p>
+          <div style="font-size: 12px; color: #64748b;">
+            <div style="padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>30天内</span> - 权重最高 (1.0)
+            </div>
+            <div style="padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+              <span>30-180天</span> - 指数衰减
+            </div>
+            <div style="padding: 6px 0;">
+              <span>>180天</span> - 逐渐归零
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 12px; background: #f0f9ff; border-radius: 8px; font-size: 12px; color: #0891b2;">
+          <p style="font-weight: 600; margin-bottom: 4px;">💡 风险等级</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px;">🟢 低风险 0-30 <span style="</span>
+           background: #eab308; color: white; padding: 2px 8px; border-radius: 4px;">🟡 中风险 31-60</span>
+            <span style="background: #f97316; color: white; padding: 2px 8px; border-radius: 4px;">🟠 高风险 61-80</span>
+            <span style="background: #dc2626; color: white; padding: 2px 8px; border-radius: 4px;">🔴 极高危 81-100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

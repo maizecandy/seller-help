@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "卖家帮 - 反欺诈插件",
+  "version": "1.0.0",
+  "description": "一键查询买家风险、举报恶意买家",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.taobao.com/*",
+    "*://*.tmall.com/*",
+    "*://*.pinduoduo.com/*",
+    "*://*.douyin.com/*",
+    "*://*.jd.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.taobao.com/*",
+        "*://*.tmall.com/*",
+        "*://*.pinduoduo.com/*",
+        "*://*.douyin.com/*",
+        "*://*.jd.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}
